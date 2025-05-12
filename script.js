@@ -80,11 +80,15 @@ function onready() {
                 insertNodeAtCursor(span);
             }
         } else if ((e.ctrlKey || e.metaKey) && e.key == "b"){
-            e.preventDefault();
-            toggle(boldenButton);
+            if(document.activeElement == textBox){
+                e.preventDefault();
+                toggle(boldenButton);
+            }
         } else if ((e.ctrlKey || e.metaKey) && e.key == "i"){
+            if(document.activeElement == textBox){
             e.preventDefault();
             toggle(italicizeButton)
+            }
         }
     });
 }
