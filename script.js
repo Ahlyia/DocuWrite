@@ -6,7 +6,11 @@ var textBox;
 var bolden = false;
 var italicize = false;
 
+var lAButton;
+var cAButton;
+var rAButton;
 
+var alignment = "left";
 
 function not(item) {
     if (typeof (item) == "boolean") {
@@ -109,6 +113,8 @@ function insertNodeAtCursor(node) {
 addEventListener('DOMContentLoaded', () => {
     boldenButton = document.getElementById("bolden");
     italicizeButton = document.getElementById("italic")
+
+    lAButton = document.getElementById("left-align");
 
     textBox = document.getElementById("rich-editor");
 

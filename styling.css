@@ -41,6 +41,26 @@ html, body {
     font-size: 3.5vh
 }
 
+#top-bar > .alignment-button{
+    border: 1px solid black;
+    border-radius: 2px;
+    aspect-ratio: 1;
+    cursor: pointer;
+    height: 4vh;
+    box-sizing: border-box;
+    top:2.5vh;
+    text-align: center;
+    font-size: 3.5vh
+}
+#top-bar > .alignment-button.selected{
+    background-color: rgb(138, 138, 245);
+    color: white;
+}
+#top-bar > .alignment-button.unselected{
+    background-color: aliceblue;
+    color: black;
+}
+
 #top-bar > .button.unselected{
     background-color:aliceblue;
     color: black;
