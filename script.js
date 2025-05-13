@@ -103,9 +103,9 @@ function onready() {
             const startOffset = getOffsetIn(textBox, range.startContainer, range.startOffset);
             const endOffset = getOffsetIn(textBox, range.endContainer, range.endOffset);
 
-            for (let i = textData.characters.length-1; i >= 0; i--) {
+            for (let i = textData.characters.length - 1; i >= 0; i--) {
                 const object = textData.characters[i];
-                if (object.index >= startOffset+1 && object.index < endOffset+1) {
+                if (object.index >= startOffset + 1 && object.index < endOffset + 1) {
                     if (object.element && object.element.parentNode) {
                         object.element.remove();
                     }
@@ -132,7 +132,7 @@ function onready() {
             cObj.italic = italicize;
 
             textData.characters.push(cObj);
-            console.log(textData.characters);
+            console.log(textData);
         }
     });
     textBox.addEventListener("keydown", function (e) {
@@ -164,16 +164,63 @@ function onready() {
             }
         } else if (e.key == "Backspace") {
             console.log("backspace");
-            setTimeout(() => {
-                textData.characters.forEach((obj, index) => {
-                    if (!document.body.contains(obj.element)) {
-                        textData.characters.splice(index, 1);
-                        console.log(textData);
-                    }
-                });
-            }, 0);
-        } else if (e.inputType == "insertText") {
+            e.preventDefault();
 
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+
+            const startOffset = getOffsetIn(textBox, range.startContainer, range.startOffset);
+            const endOffset = getOffsetIn(textBox, range.endContainer, range.endOffset);
+
+            const fullSelect = startOffset == 0 && endOffset >= textData.characters.length-1;
+
+            console.log("start: " + startOffset + "\nend: " + endOffset + "\nrange: " + range);
+
+            for (let i = textData.characters.length - 1; i >= 0; i--) {
+                const object = textData.characters[i];
+
+                // is selected
+                if (startOffset != endOffset && !fullSelect) {
+                    if (object.index >= startOffset + 1 && object.index < endOffset + 1) {
+                        if (object.element && object.element.parentNode) {
+                            object.element.remove();
+                        }
+                        console.log(object.index);
+                        textData.characters.splice(i, 1);
+                    } 
+                } else if(!fullSelect){
+                    console.log(getCaretOffset());
+                    if(i==getCaretOffset()-1){ //behind caret
+                        if(object.element && object.element.parentNode){
+                            object.element.remove();
+                        }
+                        textData.characters.splice(i,1);
+                        break;
+                    }
+                } else {
+                    if(object.element && object.element.parentNode){
+                        object.element.remove();
+                    }
+                    textData.characters.splice(i,1);
+                }
+                
+            }
+            console.log(textData);
+        } else if(e.key == "Delete"){
+            e.preventDefault();
+            for(let i=textData.characters.length-1;i>=0;i--){
+                const object = textData.characters[i];
+                if(i==getCaretOffset()){
+                    if(object.element&&object.element.parentNode){
+                        object.element.remove();
+                    }
+                    textData.characters.splice(i,1);
+                    break;
+                }
+            }
+            console.log(textData);
         }
     });
 
@@ -183,6 +230,9 @@ function onready() {
         value.addEventListener("click", function () {
             let translate = { "lAButton": "left", "cAButton": "center", "rAButton": "right" };
             alignment = translate[key];
+
+            textData.alignment = alignment;
+
             visualRefresh();
         });
     }
@@ -352,4 +402,22 @@ function getOffsetIn(root, node, offset) {
     }
 
     return charCount;
+}
+function getCaretOffset() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return 0;
+
+    const range = selection.getRangeAt(0);
+    const node = range.startContainer;
+    const offsetInNode = range.startOffset;
+
+    for (let i = 0; i < textData.characters.length; i++) {
+        const char = textData.characters[i];
+        if (char.element === node || char.element.firstChild === node) {
+            return i + offsetInNode;
+        }
+    }
+
+    // fallback if node not found
+    return textData.characters.length;
 }
