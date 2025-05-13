@@ -2,6 +2,7 @@ html, body {
     margin: 0;
     border: 0;
     overflow-x:hidden;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 *{
@@ -13,7 +14,7 @@ html, body {
 
     border: 1px solid black;
     width: 100vw;
-    position: fixed;
+    position: relative;
     border-radius: 0 0 min(2vw,10px) min(2vw,10px);
     top: 0;
     height: 8vh;
@@ -56,10 +57,6 @@ html, body {
     background-color: rgb(138, 138, 245);
     color: white;
 }
-#top-bar > .alignment-button.unselected{
-    background-color: aliceblue;
-    color: black;
-}
 
 #top-bar > .button.unselected{
     background-color:aliceblue;
@@ -87,7 +84,49 @@ html, body {
     width: 100%;
     height: 100%;   
     overflow-y:scroll;
+    font-size: 16px;
 }
 #rich-editor:focus{
     outline: 0;
+}
+
+#text-sizer{
+    border: 1px solid black;
+    position: relative;
+
+    /*width: 10vw;*/
+    width: min(10vw, 80px);
+    height: 4vh;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+#text-sizer > input {
+    border: 0;
+    height: 90%;
+    width: 90%;
+    font-size: 3vh;
+    position: absolute;
+}
+#text-sizer > input:focus{
+    outline: none;
+}
+
+#text-sizer > #size-up{
+    position: absolute;
+    aspect-ratio: 1;
+    text-align: center;
+    padding: 0;
+    height: 50%;
+    font-size: 1.3vh;
+    right: 0;
+}
+#text-sizer > #size-down{
+    position: absolute;
+    aspect-ratio: 1;
+    text-align: center;
+    padding: 0;
+    height: 50%;
+    font-size: 1.3vh;
+    top:50%;
+    right: 0;
 }

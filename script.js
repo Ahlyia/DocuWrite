@@ -6,9 +6,18 @@ var textBox;
 var bolden = false;
 var italicize = false;
 
-var lAButton;
-var cAButton;
-var rAButton;
+var fontSize = 16;
+
+var fSUp;
+var fSDown;
+
+var fSElement;
+
+var alignmentButtons = {
+    "lAButton": null,
+    "cAButton": null,
+    "rAButton": null
+};
 
 var alignment = "left";
 
@@ -23,8 +32,21 @@ function not(item) {
 }
 
 function visualRefresh() {
+    let selectedAlignmentBTN = alignmentButtons[alignment[0]+"AButton"];
 
-    console.log(bolden);
+    for(let key in alignmentButtons){
+        if(alignmentButtons[key] == selectedAlignmentBTN){
+            selectedAlignmentBTN.classList.add("selected");
+
+            textBox.style.textAlign = alignment;
+        } else {
+            alignmentButtons[key].classList.remove("selected");
+        }
+    };
+
+    fSElement.value = fontSize;
+
+    applyStyleToSelection()
 }
 
 function toggle(button) {
@@ -63,6 +85,8 @@ function onready() {
             if (bolden) textSpan.style.fontWeight = "bold";
             if (italicize) textSpan.style.fontStyle = "italic";
 
+            textSpan.style.fontSize = fontSize+"px";
+
             insertNodeAtCursor(textSpan);
         }
     });
@@ -95,6 +119,37 @@ function onready() {
             }
         }
     });
+
+    for(let key in alignmentButtons){
+        let value = alignmentButtons[key];
+
+        value.addEventListener("click",function(){
+            let translate = {"lAButton":"left","cAButton":"center","rAButton":"right"};
+            alignment = translate[key];
+            visualRefresh();
+        });
+    }
+
+    fSUp.addEventListener("click", function(){
+        fontSize += 1;
+        visualRefresh();
+    });
+    fSDown.addEventListener("click", function(){
+        if(fontSize > 1){
+            fontSize -= 1;
+        }
+        visualRefresh();
+    });
+    fSElement.addEventListener("input",function(){
+        console.log("what");
+        let content = fSElement.value;
+
+        if(!isNaN(content*1)){
+            fontSize = (content*1);
+        } else {
+            fSElement.value = fontSize;
+        }
+    });
 }
 
 function insertNodeAtCursor(node) {
@@ -114,9 +169,44 @@ addEventListener('DOMContentLoaded', () => {
     boldenButton = document.getElementById("bolden");
     italicizeButton = document.getElementById("italic")
 
-    lAButton = document.getElementById("left-align");
+    alignmentButtons.lAButton = document.getElementById("left-align");
+    alignmentButtons.rAButton = document.getElementById("right-align");
+    alignmentButtons.cAButton = document.getElementById("center-align");
+
+    fSUp = document.getElementById("size-up");
+    fSDown = document.getElementById("size-down");
+    fSElement = document.getElementById("fontSize");
 
     textBox = document.getElementById("rich-editor");
 
     onready()
 });
+
+function applyStyleToSelection() {
+    const selection = window.getSelection();
+
+    if (document.activeElement != textBox) return;
+
+    if (!selection.rangeCount || selection.isCollapsed) {
+        // Nothing selected — just update style mode
+        return false;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    // Create a span with styles
+    const span = document.createElement("span");
+    
+    if(bolden) span.style.fontWeight = "bold";
+    if(italicize) span.style.fontStyle = "italic";
+
+    span.style.fontSize = fontSize+"px";
+
+    try {
+        range.surroundContents(span);
+    } catch (err) {
+        console.warn("Selection could not be styled directly (likely partial nodes). Use a safer method for production.");
+    }
+
+    return true;
+}
